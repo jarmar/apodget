@@ -1,5 +1,6 @@
+#!/usr/bin/env python3
 from datetime import date, timedelta
-import urllib2
+import urllib.request
 import re
 
 from bs4 import BeautifulSoup
@@ -16,8 +17,8 @@ def date_image_data(d):
 # and the image filename
 def date_image(d):
     i_url = image_url(d)
-    print "OK, URL found. Downloading image.."
-    img = urllib2.urlopen(i_url)
+    print("OK, URL found. Downloading image..")
+    img = urllib.request.urlopen(i_url)
     return img, i_url.split('/')[-1]
 
 # get the url for the large image for a given date.
@@ -25,7 +26,7 @@ def date_image(d):
 # if anything goes bad, raise hell
 def image_url(d):
     p_url = page_url(d)
-    p = urllib2.urlopen(p_url)
+    p = urllib.request.urlopen(p_url)
     soup = BeautifulSoup(p.read())
     img_a = soup.find(lambda t: image_href_filter(t, d))
     if img_a == None:
@@ -52,18 +53,18 @@ def image_href_filter(tag, d):
 # figuring out at which time images are uploaded would be better..
 if __name__ == "__main__":
     today = date.today()
-    print "Attempting to download today's image.."
+    print("Attempting to download today's image..")
     try:
         img_data, filename = date_image_data(today)
     except:
-        print "Oops! Did not work very well. Trying yesterday.."
+        print("Oops! Did not work very well. Trying yesterday..")
         try:
             img_data, filename = date_image_data(today - timedelta(1))
         except:
-            print "Something goofed up. Exiting."
+            print("Something goofed up. Exiting.")
             exit()
 
     local_file = open(filename, "wb")
     local_file.write(img_data)
     local_file.close()
-    print "Success! Today's image is " + filename
+    print("Success! Today's image is " + filename)
